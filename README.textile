@@ -1,0 +1,39 @@
+h1. JRuby Heap Dump Analysis OQL
+
+This library contains an OQL, which has embedded JavaScript objects and functions that wrap the JRuby objects @ThreadContext@ from the Java heap dump, and prints out useful information about the backtrace for each @ThreadContext@ when the heap dump was generated.
+
+This is useful when your Java heap dump is generated upon your application having OOME, and you need to know the backtrace for all of your threads and see what they are doing.
+
+h2. Compatibility
+
+This OQL is tested against JRuby 1.5.6 heap dumps, on NetBeans 7.0.1.
+
+h2. Usage
+
+# Open NetBeans, go to Profile/"Load Heap Dump..." and open your Java heap dump.
+# Copy the OQL in the file @jruby-build-trace-from-frame-stack.js@ to the "OQL Console" and execute.
+
+h2. Useful to Know
+
+To have your JRuby application genearate a heap dump upon OOME, you use the following flag:
+
+@-XX:+HeapDumpOnOutOfMemoryError@
+
+h2. Contributing
+
+Feel free to enhance the JavaScripts objects and functions if you know of more useful information you can find from within a Java heap dump.
+
+h2. License
+
+Copyright 2011 ThoughtWorks, Inc.
+
+Licensed under the Apache License, Version 2.0 (the “License”);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
