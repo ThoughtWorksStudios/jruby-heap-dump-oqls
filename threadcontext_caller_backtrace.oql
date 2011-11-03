@@ -1,0 +1,78 @@
+select function(jrubyThreadContext) {  
+  
+  Array.prototype.map = function(fn) {
+    var results = [];
+    for (var i = 0; i < this.length; i++) {
+      var args = [this[i], i];
+      results.push(fn.apply(this[i], args));
+    }
+    return results;
+  };
+  
+  Array.prototype.filter = function(fn) {
+    var results = [];
+    for (var i = 0; i < this.length; i++) {
+      var value = this[i];
+      if (!fn.apply(value)) continue;
+      results.push(value);
+    }
+    return results;
+  };
+
+  Array.prototype.compact = function() { return this.filter(function(element) { return (this != undefined || this != null); }); };
+  
+  var JRuby = {
+    printObj: function(o, listInherited) {
+      result = "";
+      for (p in o) {
+        if (listInherited || "function" !== typeof o.hasOwnProperty || o.hasOwnProperty(p)) {
+          var value = null == o[p] ? "null" : o[p].toString();
+          result += p + " => " + value + "\n";
+        }
+      }
+      return result;
+    },
+    
+    JettyThread : function(jrubyNativeThread) {
+      return ({
+        objectid : function() { return objectid(jrubyNativeThread); },
+        
+        fields : function() { return classof(jrubyNativeThread).fields; },
+        
+        name : function() { return jrubyNativeThread.name.toString(); },
+
+        threadStatus : function() { return jrubyNativeThread.threadStatus; }
+      });
+    },
+    
+    ThreadContext : function(jrubyThreadContext) {
+      return ({
+        frames : function() { return toArray(jrubyThreadContext.frameStack).map(function() { return new JRuby.Frame(this); }); },
+
+        jettyThread: function() { return new JRuby.JettyThread(jrubyThreadContext.thread.threadImpl.nativeThread.referent); }
+      });
+    },
+
+    Frame : function(jrubyFrame) {
+      return ({
+        traceLine : function() {
+          if (jrubyFrame.fileName) {
+            var methodName = jrubyFrame.name ? (", --> " + jrubyFrame.name.toString() + "()") : "";
+            var lineNumber = parseInt(jrubyFrame.line, 10) + 1;
+            return jrubyFrame.fileName.toString() + ":" + lineNumber + methodName;
+          }
+          return null;
+        }
+      });
+    }
+  };
+
+  var threadContext = new JRuby.ThreadContext(jrubyThreadContext);
+  var stack = threadContext.frames().reverse().map(function() { return this.traceLine(); });
+  return {
+    javaThread : threadContext.jettyThread().name(),
+    javaThreadStatus : threadContext.jettyThread().threadStatus(),
+    javaThreadObjectId : toHtml(threadContext.jettyThread().objectid()),
+    stackTrace : stack.compact().join("\n")
+  };
+}(c) from org.jruby.runtime.ThreadContext c where c.file != null
