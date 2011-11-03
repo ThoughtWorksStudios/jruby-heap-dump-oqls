@@ -15,13 +15,19 @@ h2. Usage
 
 h2. Useful to Know
 
-To have your JRuby application genearate a heap dump upon OOME, you use the following flag:
+* To have your JRuby application genearate a heap dump upon OOME, you may use the following flag:
 
-@-XX:+HeapDumpOnOutOfMemoryError@
+bq. @-XX:+HeapDumpOnOutOfMemoryError@
+
+* When you are analyzing Java heap dumps (hprof), we have found that, on a Mac, using YourKit (10.0.1) for calculating retained heap size and NetBeans (7.0.1) for executing OQL to be the best experience. If you are live profiling and monitoring a JVM, Visual VM (1.3.3) is very nice. Also, as expected, all of these tools require a significant amount of RAM, depending on your heap dump size.
 
 h2. Contributing
 
 Feel free to enhance the JavaScripts objects and functions if you know of more useful information you can find from within a Java heap dump.
+
+h2. Original Contributors
+
+Stephen Chu, Marques Lee
 
 h2. License
 
